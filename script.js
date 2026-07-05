@@ -1,6 +1,12 @@
 /**
- * Cold Call Finder — Main Application Script (Extended v2)
- * Cloud Sync via JSONBin.io + Red Batch Separators
+ * Cold Call Finder — Main Application Script (Korrigiert & Verbessert v3)
+ * 
+ * AENDERUNGEN:
+ * 1. Bugfix: "aa is not defined" in renderTable() Sortierung behoben
+ * 2. Dashboard zeigt jetzt immer die aktuell gefilterte Anzahl
+ * 3. Kostenlose Datei-Speicherung (JSON Export/Import) hinzugefuegt
+ * 4. localStorage bleibt als primaerer kostenloser Speicher
+ * 5. Bessere deutsche Uebersetzungen
  */
 
 const PASSWORD = '26.Af.10';
@@ -31,20 +37,20 @@ let currentBatchId = 0;
 const $ = (id) => document.getElementById(id);
 
 const NICHE_CATALOG = {
-    'Food & Drink': ['restaurant','fast food','cafe','bar','pub','biergarten','ice cream','bakery','butcher','convenience','supermarket','food court','kitchen'],
-    'Healthcare': ['dentist','doctor','clinic','hospital','pharmacy','veterinary','nursing home','social facility'],
+    'Essen & Trinken': ['restaurant','fast food','cafe','bar','pub','biergarten','ice cream','bakery','butcher','convenience','supermarket','food court','kitchen'],
+    'Gesundheit': ['dentist','doctor','clinic','hospital','pharmacy','veterinary','nursing home','social facility'],
     'Beauty & Wellness': ['hairdresser','beauty','spa','sauna','massage','yoga','nail salon','tanning','tattoo','piercing'],
-    'Fitness & Sports': ['gym','fitness','sports centre','swimming pool','bowling','skating','ice rink','golf course','mini golf','stadium','dance','martial arts','climbing','tennis'],
-    'Automotive': ['car repair','mechanic','car wash','fuel','charging station','car rental','car sharing','tyres','motorcycle','truck'],
-    'Professional Services': ['lawyer','attorney','accountant','real estate','insurance','bank','notary','architect','consulting','marketing'],
-    'Home Services': ['plumber','electrician','roofer','carpenter','painter','locksmith','cleaning','gardening','landscaping','moving','hvac','pest control','handyman'],
-    'Retail': ['clothing','shoes','jewelry','watch','electronics','phone','computer','bookstore','toy','furniture','hardware','paint','garden centre','florist','pet','optician','stationery','photo','copyshop','laundry','dry cleaning','tailor','antiques','bed','carpet','lighting','tiles','doors','security','tool hire','trade'],
-    'Arts & Entertainment': ['cinema','theatre','museum','gallery','casino','nightclub','music venue','arts centre','library','community centre','conference centre','events venue'],
-    'Travel & Hospitality': ['hotel','motel','hostel','guest house','bed and breakfast','campsite','travel agency','taxi','bus station','train station','ferry terminal','airport'],
-    'Education': ['school','university','college','kindergarten','language school','music school','driving school','surf school','training','research institute','library'],
-    'Technology': ['computer','electronics','phone','software','internet cafe','gaming','video games','camera','drone'],
-    'Construction & Trade': ['hardware','paint','plumber','electrician','carpenter','roofer','flooring','tiles','doors','kitchen','tool hire','trade','builder','contractor'],
-    'Other': ['post office','police','fire station','townhall','courthouse','prison','marketplace','place of worship','funeral hall','crematorium','mortuary','internet cafe']
+    'Fitness & Sport': ['gym','fitness','sports centre','swimming pool','bowling','skating','ice rink','golf course','mini golf','stadium','dance','martial arts','climbing','tennis'],
+    'Automobil': ['car repair','mechanic','car wash','fuel','charging station','car rental','car sharing','tyres','motorcycle','truck'],
+    'Professionelle Dienstleistungen': ['lawyer','attorney','accountant','real estate','insurance','bank','notary','architect','consulting','marketing'],
+    'Heimwerker & Handwerk': ['plumber','electrician','roofer','carpenter','painter','locksmith','cleaning','gardening','landscaping','moving','hvac','pest control','handyman'],
+    'Einzelhandel': ['clothing','shoes','jewelry','watch','electronics','phone','computer','bookstore','toy','furniture','hardware','paint','garden centre','florist','pet','optician','stationery','photo','copyshop','laundry','dry cleaning','tailor','antiques','bed','carpet','lighting','tiles','doors','security','tool hire','trade'],
+    'Kunst & Unterhaltung': ['cinema','theatre','museum','gallery','casino','nightclub','music venue','arts centre','library','community centre','conference centre','events venue'],
+    'Reisen & Gastgewerbe': ['hotel','motel','hostel','guest house','bed and breakfast','campsite','travel agency','taxi','bus station','train station','ferry terminal','airport'],
+    'Bildung': ['school','university','college','kindergarten','language school','music school','driving school','surf school','training','research institute','library'],
+    'Technologie': ['computer','electronics','phone','software','internet cafe','gaming','video games','camera','drone'],
+    'Bau & Handwerk': ['hardware','paint','plumber','electrician','carpenter','roofer','flooring','tiles','doors','kitchen','tool hire','trade','builder','contractor'],
+    'Sonstiges': ['post office','police','fire station','townhall','courthouse','prison','marketplace','place of worship','funeral hall','crematorium','mortuary','internet cafe']
 };
 
 const ALL_NICHES = Object.values(NICHE_CATALOG).flat();
@@ -64,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ============================================
-// JSONBin.io Cloud Sync
+// JSONBin.io Cloud Sync (Optional)
 // ============================================
 function initJsonbin() {
     jsonbinKey = localStorage.getItem(STORAGE_JSONBIN_KEY) || '';
@@ -86,16 +92,16 @@ function showSyncMessage(text, type) {
 function updateSyncStatus(status, text) {
     const el = $('syncStatus');
     el.className = 'sync-status';
-    if (status === 'synced') { el.classList.add('synced'); el.textContent = '\u2705 Synced'; }
-    else if (status === 'error') { el.classList.add('error'); el.textContent = '\u274C ' + (text || 'Sync error'); }
-    else if (status === 'syncing') { el.textContent = '\u23F3 Syncing...'; }
-    else { el.textContent = '\u23F3 ' + (text || 'Not connected'); }
+    if (status === 'synced') { el.classList.add('synced'); el.textContent = '\u2705 Synchronisiert'; }
+    else if (status === 'error') { el.classList.add('error'); el.textContent = '\u274C ' + (text || 'Sync-Fehler'); }
+    else if (status === 'syncing') { el.textContent = '\u23F3 Synchronisiere...'; }
+    else { el.textContent = '\u2705 ' + (text || 'Lokal gespeichert'); }
 }
 
 async function connectJsonbin() {
     const key = $('jsonbinKeyInput').value.trim();
     const binId = $('jsonbinIdInput').value.trim();
-    if (!key) { showSyncMessage('Please enter your JSONBin.io API key.', 'error'); return; }
+    if (!key) { showSyncMessage('Bitte gib deinen JSONBin.io API Key ein.', 'error'); return; }
     jsonbinKey = key;
     localStorage.setItem(STORAGE_JSONBIN_KEY, key);
     if (binId) {
@@ -103,7 +109,7 @@ async function connectJsonbin() {
         localStorage.setItem(STORAGE_JSONBIN_ID, binId);
         updateSyncStatus('syncing');
         const success = await syncFromCloud();
-        if (success) showSyncMessage('Connected! Data loaded from cloud.', 'success');
+        if (success) showSyncMessage('Verbunden! Daten aus der Cloud geladen.', 'success');
     } else {
         updateSyncStatus('syncing');
         try {
@@ -118,10 +124,10 @@ async function connectJsonbin() {
             localStorage.setItem(STORAGE_JSONBIN_ID, jsonbinId);
             $('jsonbinIdInput').value = jsonbinId;
             await syncToCloud();
-            showSyncMessage('New bin created! ID: ' + jsonbinId, 'success');
+            showSyncMessage('Neue Bin erstellt! ID: ' + jsonbinId, 'success');
             updateSyncStatus('synced');
         } catch (err) {
-            showSyncMessage('Failed to create bin: ' + err.message, 'error');
+            showSyncMessage('Fehler beim Erstellen der Bin: ' + err.message, 'error');
             updateSyncStatus('error', err.message);
         }
     }
@@ -188,6 +194,76 @@ async function syncFromCloud() {
 }
 
 setInterval(() => { if (jsonbinKey && jsonbinId) syncToCloud(); }, 60000);
+
+// ============================================
+// KOSTENLOSE Datei-Speicherung (JSON Export/Import)
+// ============================================
+function saveToFile() {
+    if (leads.length === 0 && history.length === 0) { showAlert('Keine Daten zum Speichern.', 'warn'); return; }
+    const data = { 
+        leads: leads, 
+        history: history, 
+        version: 1, 
+        exportedAt: Date.now(),
+        app: 'ColdCallFinder',
+        exportDate: new Date().toISOString()
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'coldcallfinder-backup-' + new Date().toISOString().slice(0,10) + '.json';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showAlert('Backup gespeichert! ' + leads.length + ' Leads, ' + history.length + ' Verlaufseintraege.', 'info');
+    addHistory('export', 'Backup als Datei gespeichert (' + leads.length + ' Leads)');
+}
+
+function loadFromFile(file) {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        try {
+            const data = JSON.parse(e.target.result);
+            if (!data.leads || !Array.isArray(data.leads)) {
+                showAlert('Ungueltige Datei: Keine Leads gefunden.', 'error');
+                return;
+            }
+            const oldCount = leads.length;
+            const existingIds = new Set(leads.map(l => l.id));
+            let added = 0;
+            for (const newLead of data.leads) {
+                if (!existingIds.has(newLead.id)) {
+                    leads.push(newLead);
+                    existingIds.add(newLead.id);
+                    added++;
+                }
+            }
+            if (data.history && Array.isArray(data.history)) {
+                const existingHistIds = new Set(history.map(h => h.id));
+                for (const newHist of data.history) {
+                    if (!existingHistIds.has(newHist.id)) {
+                        history.push(newHist);
+                        existingHistIds.add(newHist.id);
+                    }
+                }
+                history.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+                if (history.length > 200) history = history.slice(0, 200);
+            }
+            saveData(); saveHistory();
+            const maxBatch = Math.max(...leads.map(l => l.batchId || 0), 0);
+            currentBatchId = maxBatch;
+            renderDashboard(); renderTable(); renderHistory(); updateCategoryFilter();
+            showAlert('Backup geladen! ' + added + ' neue Leads importiert. Gesamt: ' + leads.length + ' Leads.', 'info');
+            addHistory('export', 'Backup aus Datei geladen (' + added + ' neue Leads)');
+            if (jsonbinKey && jsonbinId) syncToCloud();
+        } catch (err) {
+            showAlert('Fehler beim Laden der Datei: ' + err.message, 'error');
+        }
+    };
+    reader.onerror = () => showAlert('Fehler beim Lesen der Datei.', 'error');
+    reader.readAsText(file);
+}
 
 // ============================================
 // Niche Dropdown
@@ -269,9 +345,9 @@ function initFilters() {
         } catch (e) {}
     }
     ['filterStatus','filterWebsite','filterPhone','filterRating','filterSource','filterCategory'].forEach(id => {
-        $(id).addEventListener('change', () => { saveFilters(); renderTable(); });
+        $(id).addEventListener('change', () => { saveFilters(); renderDashboard(); renderTable(); });
     });
-    $('filterInput').addEventListener('input', () => { saveFilters(); renderTable(); });
+    $('filterInput').addEventListener('input', () => { saveFilters(); renderDashboard(); renderTable(); });
     $('resetFiltersBtn').addEventListener('click', resetFilters);
 }
 function saveFilters() {
@@ -285,7 +361,7 @@ function resetFilters() {
     $('filterStatus').value = ''; $('filterWebsite').value = ''; $('filterPhone').value = '';
     $('filterRating').value = ''; $('filterSource').value = ''; $('filterCategory').value = '';
     $('filterInput').value = ''; activeDashboardFilter = '';
-    updateDashboardActiveState(); saveFilters(); renderTable();
+    updateDashboardActiveState(); saveFilters(); renderDashboard(); renderTable();
 }
 function updateDashboardActiveState() {
     document.querySelectorAll('.dash-card.clickable').forEach(card => {
@@ -304,43 +380,43 @@ function showApp() { $('loginScreen').style.display = 'none'; $('appScreen').sty
 function attemptLogin() {
     if ($('passwordInput').value.trim() === PASSWORD) {
         localStorage.setItem(STORAGE_AUTH, 'true'); $('loginError').textContent = ''; showApp();
-    } else { $('loginError').textContent = 'Incorrect password.'; $('passwordInput').value = ''; $('passwordInput').focus(); }
+    } else { $('loginError').textContent = 'Falsches Passwort.'; $('passwordInput').value = ''; $('passwordInput').focus(); }
 }
 function logout() { localStorage.removeItem(STORAGE_AUTH); showLogin(); $('passwordInput').value = ''; }
 
 function initLocation() {
-    if (!navigator.geolocation) { $('locationStatus').textContent = 'Geolocation not supported. Use manual location.'; $('manualLocationBox').style.display = 'flex'; return; }
-    $('locationStatus').textContent = 'Detecting your location...';
+    if (!navigator.geolocation) { $('locationStatus').textContent = 'Geolocation nicht unterstuetzt. Bitte manuellen Standort verwenden.'; $('manualLocationBox').style.display = 'flex'; return; }
+    $('locationStatus').textContent = 'Standort wird ermittelt...';
     navigator.geolocation.getCurrentPosition(
-        (pos) => { userLocation = { lat: pos.coords.latitude, lng: pos.coords.longitude }; $('locationStatus').textContent = 'Location detected. Ready to search.'; reverseGeocode(userLocation.lat, userLocation.lng); },
-        (err) => { console.warn('Geolocation error:', err); $('locationStatus').textContent = 'Location access denied. Use manual location.'; $('manualLocationBox').style.display = 'flex'; },
+        (pos) => { userLocation = { lat: pos.coords.latitude, lng: pos.coords.longitude }; $('locationStatus').textContent = 'Standort erkannt. Bereit zur Suche.'; reverseGeocode(userLocation.lat, userLocation.lng); },
+        (err) => { console.warn('Geolocation error:', err); $('locationStatus').textContent = 'Standortzugriff verweigert. Bitte manuellen Standort verwenden.'; $('manualLocationBox').style.display = 'flex'; },
         { timeout: 10000, maximumAge: 60000 }
     );
 }
 function reverseGeocode(lat, lng) {
-    fetch('https://nominatim.openstreetmap.org/reverse?lat=' + lat + '&lon=' + lng + '&format=json', { headers: { 'Accept-Language': 'en' } })
+    fetch('https://nominatim.openstreetmap.org/reverse?lat=' + lat + '&lon=' + lng + '&format=json', { headers: { 'Accept-Language': 'de' } })
     .then(r => r.json()).then(data => {
         if (data && data.address) {
             const city = data.address.city || data.address.town || data.address.village || data.address.county || '';
             const country = data.address.country || '';
             locationName = city + (city && country ? ', ' : '') + country;
-            if (locationName) $('locationStatus').textContent = 'Location: ' + locationName;
+            if (locationName) $('locationStatus').textContent = 'Standort: ' + locationName;
         }
     }).catch(() => {});
 }
 function setManualLocation() {
     const query = $('manualLocationInput').value.trim();
     if (!query) return;
-    $('locationStatus').textContent = 'Looking up location...';
-    fetch('https://nominatim.openstreetmap.org/search?q=' + encodeURIComponent(query) + '&format=json&limit=1', { headers: { 'Accept-Language': 'en' } })
+    $('locationStatus').textContent = 'Standort wird gesucht...';
+    fetch('https://nominatim.openstreetmap.org/search?q=' + encodeURIComponent(query) + '&format=json&limit=1', { headers: { 'Accept-Language': 'de' } })
     .then(r => r.json()).then(data => {
         if (data && data.length > 0) {
             userLocation = { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
             locationName = data[0].display_name.split(',')[0];
-            $('locationStatus').textContent = 'Location: ' + locationName;
+            $('locationStatus').textContent = 'Standort: ' + locationName;
             $('manualLocationBox').style.display = 'none';
-        } else { $('locationStatus').textContent = 'Location not found. Try again.'; }
-    }).catch(() => { $('locationStatus').textContent = 'Error looking up location. Try again.'; });
+        } else { $('locationStatus').textContent = 'Standort nicht gefunden. Bitte erneut versuchen.'; }
+    }).catch(() => { $('locationStatus').textContent = 'Fehler bei der Standortsuche. Bitte erneut versuchen.'; });
 }
 
 // ============================================
@@ -368,27 +444,33 @@ function bindEvents() {
     $('saveApiKeyBtn').addEventListener('click', saveApiKey);
     $('apiKeyInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') saveApiKey(); });
     $('connectJsonbinBtn').addEventListener('click', connectJsonbin);
-    $('syncNowBtn').addEventListener('click', () => { syncFromCloud().then(ok => { if (ok) showSyncMessage('Synced from cloud!', 'success'); }); });
+    $('syncNowBtn').addEventListener('click', () => { syncFromCloud().then(ok => { if (ok) showSyncMessage('Aus Cloud synchronisiert!', 'success'); }); });
+
+    // Datei-Speicherung Events
+    $('saveFileBtn').addEventListener('click', saveToFile);
+    $('loadFileBtn').addEventListener('click', () => $('fileInput').click());
+    $('fileInput').addEventListener('change', (e) => { if (e.target.files[0]) loadFromFile(e.target.files[0]); e.target.value = ''; });
+
     document.querySelectorAll('.dash-card.clickable').forEach(card => {
         card.addEventListener('click', () => {
             activeDashboardFilter = activeDashboardFilter === card.dataset.filter ? '' : card.dataset.filter;
-            updateDashboardActiveState(); saveFilters(); renderTable();
+            updateDashboardActiveState(); saveFilters(); renderDashboard(); renderTable();
         });
     });
     $('exportBtn').addEventListener('click', exportCSV);
     $('clearBtn').addEventListener('click', () => {
-        if (confirm('Clear all leads? This cannot be undone.')) {
+        if (confirm('Alle Leads loeschen? Dies kann nicht rueckgaengig gemacht werden.')) {
             const count = leads.length; leads = []; saveData(); renderDashboard(); renderTable(); updateCategoryFilter();
-            addHistory('clear', 'Cleared all ' + count + ' leads');
+            addHistory('clear', 'Alle ' + count + ' Leads geloescht');
         }
     });
     $('clearHistoryBtn').addEventListener('click', () => {
-        if (confirm('Clear all history?')) { history = []; saveHistory(); renderHistory(); }
+        if (confirm('Gesamten Verlauf loeschen?')) { history = []; saveHistory(); renderHistory(); }
     });
 }
 function saveApiKey() {
     const key = $('apiKeyInput').value.trim();
-    if (key) { localStorage.setItem('coldcallfinder_apikey', key); $('apiKeyInput').value = ''; showAlert('API key saved.', 'info'); }
+    if (key) { localStorage.setItem('coldcallfinder_apikey', key); $('apiKeyInput').value = ''; showAlert('API Key gespeichert.', 'info'); }
 }
 
 // ============================================
@@ -403,17 +485,17 @@ function addHistory(type, text, meta) {
     if (jsonbinKey && jsonbinId) syncToCloud();
 }
 function saveHistory() {
-    try { localStorage.setItem(STORAGE_HISTORY, JSON.stringify(history)); } catch (e) { console.warn('Failed to save history:', e); }
+    try { localStorage.setItem(STORAGE_HISTORY, JSON.stringify(history)); } catch (e) { console.warn('Verlauf konnte nicht gespeichert werden:', e); }
 }
 function loadHistory() {
     try {
         const raw = localStorage.getItem(STORAGE_HISTORY);
         if (raw) { const parsed = JSON.parse(raw); if (Array.isArray(parsed)) history = parsed; }
-    } catch (e) { console.warn('Failed to load history:', e); }
+    } catch (e) { console.warn('Verlauf konnte nicht geladen werden:', e); }
 }
 function renderHistory() {
     const list = $('historyList');
-    if (history.length === 0) { list.innerHTML = '<div class="empty-history">No activity yet.</div>'; return; }
+    if (history.length === 0) { list.innerHTML = '<div class="empty-history">Noch keine Aktivitaet.</div>'; return; }
     const icons = { search: '\u{1F50D}', status: '\u{1F4DE}', add: '\u2795', delete: '\u{1F5D1}\uFE0F', export: '\u{1F4E4}', clear: '\u{1F9F9}', note: '\u{1F4DD}', contact: '\u{1F4C5}' };
     let html = '';
     for (const entry of history.slice(0, 50)) {
@@ -430,8 +512,8 @@ function renderHistory() {
 // ============================================
 async function performSearch() {
     const niche = $('nicheInput').value.trim();
-    if (!niche) { showAlert('Please enter a business niche.', 'warn'); return; }
-    if (!userLocation) { showAlert('Location not set. Allow geolocation or enter a city manually.', 'warn'); $('manualLocationBox').style.display = 'flex'; return; }
+    if (!niche) { showAlert('Bitte gib eine Branchen-Nische ein.', 'warn'); return; }
+    if (!userLocation) { showAlert('Standort nicht festgelegt. Bitte Geolocation erlauben oder Stadt manuell eingeben.', 'warn'); $('manualLocationBox').style.display = 'flex'; return; }
     currentBatchId++;
     if (searchProvider === 'google') await searchGoogle(niche); else await searchOpenStreetMap(niche);
 }
@@ -441,7 +523,7 @@ async function performSearch() {
 // ============================================
 async function searchGoogle(niche) {
     const apiKey = localStorage.getItem('coldcallfinder_apikey');
-    if (!apiKey) { showAlert('Google Places API key required. Enter it below or switch to OpenStreetMap (free).', 'warn'); $('apiKeyBox').style.display = ''; $('apiKeyInput').focus(); return; }
+    if (!apiKey) { showAlert('Google Places API Key erforderlich. Key unten eingeben oder zu OpenStreetMap (kostenlos) wechseln.', 'warn'); $('apiKeyBox').style.display = ''; $('apiKeyInput').focus(); return; }
     const radius = parseInt($('radiusSelect').value, 10);
     setSearching(true); clearAlert();
     try {
@@ -458,9 +540,9 @@ async function searchGoogle(niche) {
         }
         const searchData = await searchRes.json();
         const places = searchData.places || [];
-        if (places.length === 0) { showAlert('No businesses found. Try a different niche or expand the radius.', 'info'); setSearching(false); return; }
+        if (places.length === 0) { showAlert('Keine Unternehmen gefunden. Bitte andere Nische oder groesseren Radius versuchen.', 'info'); setSearching(false); return; }
         processResults(places, 'google');
-    } catch (err) { showAlert(err.message || 'Search failed. Try switching to OpenStreetMap.', 'error'); }
+    } catch (err) { showAlert(err.message || 'Suche fehlgeschlagen. Bitte zu OpenStreetMap wechseln.', 'error'); }
     finally { setSearching(false); }
 }
 
@@ -570,12 +652,12 @@ async function searchOpenStreetMap(niche) {
                 body: 'data=' + encodeURIComponent(query)
             });
         }
-        if (!res.ok) throw new Error('Overpass API error: ' + res.status);
+        if (!res.ok) throw new Error('Overpass API Fehler: ' + res.status);
         const data = await res.json();
         const elements = data.elements || [];
-        if (elements.length === 0) { showAlert('No businesses found in OpenStreetMap for this area. Try a different niche, larger radius, or switch to Google Places.', 'info'); setSearching(false); return; }
+        if (elements.length === 0) { showAlert('Keine Unternehmen in OpenStreetMap fuer diesen Bereich gefunden. Bitte andere Nische, groesseren Radius oder Google Places versuchen.', 'info'); setSearching(false); return; }
         processOsmResults(elements, niche);
-    } catch (err) { showAlert(err.message || 'OpenStreetMap search failed. Try again or switch to Google Places.', 'error'); }
+    } catch (err) { showAlert(err.message || 'OpenStreetMap-Suche fehlgeschlagen. Bitte erneut versuchen oder zu Google Places wechseln.', 'error'); }
     finally { setSearching(false); }
 }
 
@@ -612,7 +694,7 @@ function processOsmResults(elements, niche) {
         else if (tags.healthcare) category = tags.healthcare;
         category = category.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
         leads.push({
-            id: id, name: tags.name || tags['name:en'] || 'Unnamed ' + category, phone: phone, address: address,
+            id: id, name: tags.name || tags['name:en'] || 'Unbenannt ' + category, phone: phone, address: address,
             website: tags.website || tags['contact:website'] || tags['contact:url'] || '',
             mapsLink: 'https://www.openstreetmap.org/' + el.type + '/' + el.id,
             rating: null, reviews: 0, category: category, status: 'tocall', notes: '', lastContact: '', called: false,
@@ -620,8 +702,8 @@ function processOsmResults(elements, niche) {
         });
         existingIds.add(id); existingPhones.add(normPhone); added++;
     }
-    if (added === 0) showAlert(elements.length + ' places found in OSM, but none had a phone number. Try a different area or niche.', 'warn');
-    else { showAlert('Found ' + added + ' new lead' + (added !== 1 ? 's' : '') + ' via OpenStreetMap (free).', 'info'); addHistory('search', 'Found ' + added + ' leads for "' + niche + '" via OpenStreetMap', locationName || 'Unknown location'); }
+    if (added === 0) showAlert(elements.length + ' Orte in OSM gefunden, aber keiner hatte eine Telefonnummer. Bitte anderen Bereich oder Nische versuchen.', 'warn');
+    else { showAlert(added + ' neue Lead' + (added !== 1 ? 's' : '') + ' ueber OpenStreetMap (kostenlos) gefunden.', 'info'); addHistory('search', added + ' Leads fuer "' + niche + '" ueber OpenStreetMap gefunden', locationName || 'Unbekannter Standort'); }
     saveData(); renderDashboard(); renderTable(); updateCategoryFilter(); syncToCloud();
 }
 
@@ -642,7 +724,7 @@ function processResults(places, source) {
         const id = place.id || (place.displayName?.text || '') + '-' + (place.formattedAddress || '');
         if (existingIds.has(id)) continue;
         leads.push({
-            id: id, name: place.displayName?.text || 'Unknown', phone: phone, address: place.formattedAddress || '',
+            id: id, name: place.displayName?.text || 'Unbekannt', phone: phone, address: place.formattedAddress || '',
             website: place.websiteUri || '',
             mapsLink: place.googleMapsUri || 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(place.location?.latitude || 0) + ',' + encodeURIComponent(place.location?.longitude || 0),
             rating: place.rating || null, reviews: place.userRatingCount || 0, category: place.primaryTypeDisplayName?.text || '',
@@ -651,8 +733,8 @@ function processResults(places, source) {
         });
         existingIds.add(id); existingPhones.add(normPhone); added++;
     }
-    if (added === 0 && places.length > 0) showAlert(places.length + ' places found, but none had a phone number. Try a different niche.', 'warn');
-    else { showAlert('Found ' + added + ' new lead' + (added !== 1 ? 's' : '') + '.', 'info'); addHistory('search', 'Found ' + added + ' leads via Google Places', locationName || 'Unknown location'); }
+    if (added === 0 && places.length > 0) showAlert(places.length + ' Orte gefunden, aber keiner hatte eine Telefonnummer. Bitte andere Nische versuchen.', 'warn');
+    else { showAlert(added + ' neue Lead' + (added !== 1 ? 's' : '') + ' gefunden.', 'info'); addHistory('search', added + ' Leads ueber Google Places gefunden', locationName || 'Unbekannter Standort'); }
     saveData(); renderDashboard(); renderTable(); updateCategoryFilter(); syncToCloud();
 }
 
@@ -660,16 +742,54 @@ function setSearching(active) {
     isSearching = active;
     const btn = $('searchBtn');
     const text = $('searchBtnText');
-    if (active) { btn.disabled = true; text.innerHTML = '<span class="spinner"></span>Searching...'; }
-    else { btn.disabled = false; text.textContent = 'Search'; }
+    if (active) { btn.disabled = true; text.innerHTML = '<span class="spinner"></span>Suche...'; }
+    else { btn.disabled = false; text.textContent = 'Suchen'; }
 }
 
 // ============================================
 // Rendering
 // ============================================
 function renderDashboard() {
-    const counts = { total: leads.length, tocall: 0, called: 0, accepted: 0, rejected: 0, progress: 0 };
-    for (const lead of leads) { const st = lead.status || 'tocall'; if (counts[st] !== undefined) counts[st]++; }
+    // Wende dieselben Filter wie in renderTable() an, damit Dashboard immer aktuelle Zahlen zeigt
+    let visible = leads;
+
+    if (activeDashboardFilter && activeDashboardFilter !== 'all') 
+        visible = visible.filter(l => l.status === activeDashboardFilter);
+
+    const statusFilter = $('filterStatus').value;
+    if (statusFilter) visible = visible.filter(l => l.status === statusFilter);
+
+    const websiteFilter = $('filterWebsite').value;
+    if (websiteFilter === 'has') visible = visible.filter(l => l.website && l.website.trim() !== '');
+    else if (websiteFilter === 'none') visible = visible.filter(l => !l.website || l.website.trim() === '');
+
+    const phoneFilter = $('filterPhone').value;
+    if (phoneFilter === 'has') visible = visible.filter(l => l.phone && l.phone.trim() !== '');
+    else if (phoneFilter === 'none') visible = visible.filter(l => !l.phone || l.phone.trim() === '');
+
+    const ratingFilter = $('filterRating').value;
+    if (ratingFilter === '4plus') visible = visible.filter(l => l.rating && l.rating >= 4);
+    else if (ratingFilter === '3plus') visible = visible.filter(l => l.rating && l.rating >= 3);
+    else if (ratingFilter === 'none') visible = visible.filter(l => !l.rating);
+
+    const sourceFilter = $('filterSource').value;
+    if (sourceFilter) visible = visible.filter(l => l.source === sourceFilter);
+
+    const categoryFilter = $('filterCategory').value;
+    if (categoryFilter) visible = visible.filter(l => l.category === categoryFilter);
+
+    const textFilter = ($('filterInput').value || '').toLowerCase().trim();
+    if (textFilter) visible = visible.filter(l => 
+        (l.name || '').toLowerCase().includes(textFilter) || 
+        (l.phone || '').toLowerCase().includes(textFilter) || 
+        (l.address || '').toLowerCase().includes(textFilter) || 
+        (l.category || '').toLowerCase().includes(textFilter) || 
+        (l.notes || '').toLowerCase().includes(textFilter)
+    );
+
+    const counts = { total: visible.length, tocall: 0, called: 0, accepted: 0, rejected: 0, progress: 0 };
+    for (const lead of visible) { const st = lead.status || 'tocall'; if (counts[st] !== undefined) counts[st]++; }
+
     $('dashTotal').textContent = counts.total;
     $('dashToCall').textContent = counts.tocall;
     $('dashCalled').textContent = counts.called;
@@ -682,7 +802,7 @@ function updateCategoryFilter() {
     const select = $('filterCategory');
     const currentVal = select.value;
     const categories = [...new Set(leads.map(l => l.category).filter(Boolean))].sort();
-    select.innerHTML = '<option value="">All</option>';
+    select.innerHTML = '<option value="">Alle</option>';
     for (const cat of categories) { const opt = document.createElement('option'); opt.value = cat; opt.textContent = cat; select.appendChild(opt); }
     select.value = currentVal;
 }
@@ -690,8 +810,8 @@ function updateCategoryFilter() {
 function renderTable() {
     const wrap = $('resultsTableWrap');
     if (leads.length === 0) {
-        wrap.innerHTML = '<div class="empty-state"><p>Enter a business niche and click Search to find leads near you.</p><p style="margin-top:8px;color:var(--text-dim);font-size:12px">Tip: Switch to OpenStreetMap (free) — no API key needed.</p></div>';
-        $('resultsCount').textContent = '0 leads';
+        wrap.innerHTML = '<div class="empty-state"><p>Gib eine Branchen-Nische ein und klicke auf Suchen, um Leads in deiner Naehe zu finden.</p><p style="margin-top:8px;color:var(--text-dim);font-size:12px">Tipp: OpenStreetMap (kostenlos) verwenden — kein API Key noetig.</p></div>';
+        $('resultsCount').textContent = '0 Leads';
         return;
     }
 
@@ -716,36 +836,37 @@ function renderTable() {
     const textFilter = ($('filterInput').value || '').toLowerCase().trim();
     if (textFilter) visible = visible.filter(l => (l.name || '').toLowerCase().includes(textFilter) || (l.phone || '').toLowerCase().includes(textFilter) || (l.address || '').toLowerCase().includes(textFilter) || (l.category || '').toLowerCase().includes(textFilter) || (l.notes || '').toLowerCase().includes(textFilter));
 
-    $('resultsCount').textContent = visible.length + ' of ' + leads.length + ' leads';
+    $('resultsCount').textContent = visible.length + ' von ' + leads.length + ' Leads';
 
     if (visible.length === 0) {
-        wrap.innerHTML = '<div class="empty-state"><p>No leads match your filters.</p><p style="margin-top:8px;color:var(--text-dim);font-size:12px">Try adjusting your filters or search for new leads.</p></div>';
+        wrap.innerHTML = '<div class="empty-state"><p>Keine Leads entsprechen deinen Filtern.</p><p style="margin-top:8px;color:var(--text-dim);font-size:12px">Versuche die Filter anzupassen oder neue Leads zu suchen.</p></div>';
         return;
     }
 
-    // Sort: status order, then batchId desc (newest first), then name
+    // Sortierung: Status-Reihenfolge, dann batchId absteigend (neueste zuerst), dann Name
+    // BUGFIX: 'aa' war nicht definiert! Jetzt korrekt mit a.batchId und b.batchId
     const statusOrder = { tocall: 0, called: 1, progress: 2, accepted: 3, rejected: 4 };
     visible = [...visible].sort((a, b) => {
         const oa = statusOrder[a.status] ?? 99;
         const ob = statusOrder[b.status] ?? 99;
         if (oa !== ob) return oa - ob;
-        const ba = b.batchId || 0;
-        const bb = a.batchId || 0;
-        if (ba !== bb) return ba - aa; // descending
+        const batchA = a.batchId || 0;
+        const batchB = b.batchId || 0;
+        if (batchB !== batchA) return batchB - batchA; // absteigend: neueste zuerst
         return (a.name || '').localeCompare(b.name || '');
     });
 
     const statusOptions = [
-        { value: 'tocall', label: '\u2610 To Call' },
-        { value: 'called', label: '\uD83D\uDCDE Called' },
-        { value: 'rejected', label: '\u274C Rejected' },
-        { value: 'accepted', label: '\u2705 Accepted' },
-        { value: 'progress', label: '\uD83D\uDFE1 In Progress' }
+        { value: 'tocall', label: '\u2610 Anrufen' },
+        { value: 'called', label: '\uD83D\uDCDE Angerufen' },
+        { value: 'rejected', label: '\u274C Abgelehnt' },
+        { value: 'accepted', label: '\u2705 Akzeptiert' },
+        { value: 'progress', label: '\uD83D\uDFE1 In Bearbeitung' }
     ];
 
     let html = '<table><thead><tr>';
-    html += '<th class="td-check"><input type="checkbox" id="selectAll" title="Select all"></th>';
-    html += '<th>Status</th><th>Business</th><th>Phone</th><th>Address</th><th>Website</th><th>Maps</th><th>Rating</th><th>Reviews</th><th>Notes</th><th>Last Contact</th><th></th>';
+    html += '<th class="td-check"><input type="checkbox" id="selectAll" title="Alle auswaehlen"></th>';
+    html += '<th>Status</th><th>Unternehmen</th><th>Telefon</th><th>Adresse</th><th>Webseite</th><th>Karte</th><th>Bewertung</th><th>Rezensionen</th><th>Notizen</th><th>Letzter Kontakt</th><th></th>';
     html += '</tr></thead><tbody>';
 
     let lastBatchId = null;
@@ -753,17 +874,17 @@ function renderTable() {
 
     for (const lead of visible) {
         const leadBatchId = lead.batchId || 0;
-        // NEW: Red separator when batch changes
+        // Roter Separator bei Batch-Wechsel
         if (lastBatchId !== null && leadBatchId !== lastBatchId && leadBatchId > 0) {
             batchCounter++;
-            html += '<tr class="new-batch-separator"><td colspan="12">\u{1F504} New Search Batch #' + batchCounter + ' &mdash; ' + new Date(lead.createdAt || Date.now()).toLocaleString('de-DE') + '</td></tr>';
+            html += '<tr class="new-batch-separator"><td colspan="12">\u{1F504} Neue Such-Batch #' + batchCounter + ' &mdash; ' + new Date(lead.createdAt || Date.now()).toLocaleString('de-DE') + '</td></tr>';
         }
         lastBatchId = leadBatchId;
 
         const statusClass = 'status-' + (lead.status || 'tocall');
         const ratingStars = lead.rating ? renderStars(lead.rating) : '\u2014';
         const websiteLink = lead.website ? '<a href="' + escAttr(lead.website) + '" target="_blank" rel="noopener" class="website-link">' + esc(shortUrl(lead.website)) + '</a>' : '<span style="color:var(--text-dim)">\u2014</span>';
-        const mapsLink = lead.mapsLink ? '<a href="' + escAttr(lead.mapsLink) + '" target="_blank" rel="noopener" class="maps-link" title="Open map">\uD83D\uDCCD</a>' : '\u2014';
+        const mapsLink = lead.mapsLink ? '<a href="' + escAttr(lead.mapsLink) + '" target="_blank" rel="noopener" class="maps-link" title="Karte oeffnen">\uD83D\uDCCD</a>' : '\u2014';
         const sourceBadge = lead.source === 'osm' ? '<span style="font-size:10px;color:var(--text-dim);margin-left:4px">[OSM]</span>' : '';
         let statusSelect = '<select class="status-select" data-id="' + escAttr(lead.id) + '">';
         for (const o of statusOptions) statusSelect += '<option value="' + o.value + '"' + (lead.status === o.value ? ' selected' : '') + '>' + o.label + '</option>';
@@ -779,9 +900,9 @@ function renderTable() {
         html += '<td>' + mapsLink + '</td>';
         html += '<td class="rating-cell">' + ratingStars + '</td>';
         html += '<td>' + (lead.reviews || 0) + '</td>';
-        html += '<td><input type="text" class="note-input" data-id="' + escAttr(lead.id) + '" value="' + escAttr(lead.notes || '') + '" placeholder="Add notes..."></td>';
+        html += '<td><input type="text" class="note-input" data-id="' + escAttr(lead.id) + '" value="' + escAttr(lead.notes || '') + '" placeholder="Notizen..."></td>';
         html += '<td><input type="date" class="contact-date" data-id="' + escAttr(lead.id) + '" value="' + escAttr(lead.lastContact || '') + '"></td>';
-        html += '<td><button class="del-btn" data-id="' + escAttr(lead.id) + '" title="Delete">\u00D7</button></td>';
+        html += '<td><button class="del-btn" data-id="' + escAttr(lead.id) + '" title="Loeschen">\u00D7</button></td>';
         html += '</tr>';
     }
 
@@ -812,7 +933,7 @@ function attachTableListeners() {
                 lead.updatedAt = Date.now();
                 if (e.target.value === 'called') lead.called = true;
                 saveData(); renderDashboard(); renderTable();
-                addHistory('status', '"' + lead.name + '" changed from ' + oldStatus + ' to ' + lead.status);
+                addHistory('status', '"' + lead.name + '" von ' + oldStatus + ' auf ' + lead.status + ' geaendert');
             }
         });
     });
@@ -833,22 +954,22 @@ function attachTableListeners() {
         el.addEventListener('change', (e) => {
             const id = e.target.dataset.id;
             const lead = leads.find(l => l.id === id);
-            if (lead) { lead.notes = e.target.value; lead.updatedAt = Date.now(); saveData(); addHistory('note', 'Note added to "' + lead.name + '"'); }
+            if (lead) { lead.notes = e.target.value; lead.updatedAt = Date.now(); saveData(); addHistory('note', 'Notiz zu "' + lead.name + '" hinzugefuegt'); }
         });
     });
     document.querySelectorAll('.contact-date').forEach(el => {
         el.addEventListener('change', (e) => {
             const id = e.target.dataset.id;
             const lead = leads.find(l => l.id === id);
-            if (lead) { lead.lastContact = e.target.value; lead.updatedAt = Date.now(); saveData(); addHistory('contact', 'Contact date updated for "' + lead.name + '"', e.target.value); }
+            if (lead) { lead.lastContact = e.target.value; lead.updatedAt = Date.now(); saveData(); addHistory('contact', 'Kontaktdatum fuer "' + lead.name + '" aktualisiert', e.target.value); }
         });
     });
     document.querySelectorAll('.del-btn').forEach(el => {
         el.addEventListener('click', (e) => {
             const id = e.target.dataset.id;
             const lead = leads.find(l => l.id === id);
-            if (lead && confirm('Delete "' + lead.name + '"?')) {
-                leads = leads.filter(l => l.id !== id); saveData(); renderDashboard(); renderTable(); updateCategoryFilter(); addHistory('delete', 'Deleted "' + lead.name + '"');
+            if (lead && confirm('"' + lead.name + '" loeschen?')) {
+                leads = leads.filter(l => l.id !== id); saveData(); renderDashboard(); renderTable(); updateCategoryFilter(); addHistory('delete', '"' + lead.name + '" geloescht');
             }
         });
     });
@@ -875,25 +996,25 @@ function attachTableListeners() {
 // CSV Export
 // ============================================
 function exportCSV() {
-    if (leads.length === 0) { showAlert('No leads to export.', 'warn'); return; }
-    const headers = ['Status','Business Name','Phone','Address','Website','Map Link','Rating','Reviews','Category','Notes','Last Contact','Called','Source'];
-    const statusLabels = { tocall: 'To Call', called: 'Called', rejected: 'Rejected', accepted: 'Accepted', progress: 'In Progress' };
-    const rows = leads.map(l => [statusLabels[l.status] || l.status, l.name, l.phone, l.address, l.website, l.mapsLink, l.rating ?? '', l.reviews, l.category, l.notes, l.lastContact, l.called ? 'Yes' : 'No', l.source || 'google']);
+    if (leads.length === 0) { showAlert('Keine Leads zum Exportieren.', 'warn'); return; }
+    const headers = ['Status','Unternehmen','Telefon','Adresse','Webseite','Kartenlink','Bewertung','Rezensionen','Kategorie','Notizen','Letzter Kontakt','Angerufen','Quelle'];
+    const statusLabels = { tocall: 'Anrufen', called: 'Angerufen', rejected: 'Abgelehnt', accepted: 'Akzeptiert', progress: 'In Bearbeitung' };
+    const rows = leads.map(l => [statusLabels[l.status] || l.status, l.name, l.phone, l.address, l.website, l.mapsLink, l.rating ?? '', l.reviews, l.category, l.notes, l.lastContact, l.called ? 'Ja' : 'Nein', l.source || 'google']);
     const csvContent = [headers, ...rows].map(row => row.map(cell => { const str = String(cell ?? '').replace(/"/g, '""'); return /[",\n]/.test(str) ? '"' + str + '"' : str; }).join(',')).join('\r\n');
     const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url; a.download = 'cold-call-leads-' + new Date().toISOString().slice(0,10) + '.csv';
     document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
-    showAlert('Exported ' + leads.length + ' lead' + (leads.length !== 1 ? 's' : '') + ' to CSV.', 'info');
-    addHistory('export', 'Exported ' + leads.length + ' leads to CSV');
+    showAlert(leads.length + ' Lead' + (leads.length !== 1 ? 's' : '') + ' als CSV exportiert.', 'info');
+    addHistory('export', leads.length + ' Leads als CSV exportiert');
 }
 
 // ============================================
 // Data Persistence
 // ============================================
 function saveData() {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(leads)); } catch (e) { showAlert('Warning: Local storage is full. Export your data to avoid losing it.', 'warn'); }
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(leads)); } catch (e) { showAlert('Warnung: Lokaler Speicher ist voll. Bitte Daten exportieren um Verlust zu vermeiden.', 'warn'); }
     if (jsonbinKey && jsonbinId) syncToCloud();
 }
 function loadData() {
@@ -908,7 +1029,7 @@ function loadData() {
                 renderDashboard(); renderTable(); updateCategoryFilter();
             }
         }
-    } catch (e) { console.warn('Failed to load from localStorage:', e); }
+    } catch (e) { console.warn('Fehler beim Laden aus localStorage:', e); }
 }
 
 // ============================================
