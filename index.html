@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,8 +15,8 @@
         <div class="login-box">
             <div class="login-logo">📞</div>
             <h1>Cold Call Finder</h1>
-            <p>Enter password to continue</p>
-            <input type="password" id="passwordInput" placeholder="Password" autocomplete="off">
+            <p>Passwort eingeben zum Fortfahren</p>
+            <input type="password" id="passwordInput" placeholder="Passwort" autocomplete="off">
             <button id="loginBtn">Enter</button>
             <div id="loginError" class="login-error"></div>
         </div>
@@ -29,8 +29,8 @@
                 <span class="logo">📞 Cold Call Finder</span>
             </div>
             <div class="header-right">
-                <span id="syncStatus" class="sync-status">⏳ Sync...</span>
-                <button id="syncNowBtn" class="ghost-btn small" title="Sync now">🔄</button>
+                <span id="syncStatus" class="sync-status">⏳ Bereit</span>
+                <button id="syncNowBtn" class="ghost-btn small" title="Jetzt synchronisieren">🔄</button>
                 <button id="logoutBtn" class="ghost-btn">Logout</button>
             </div>
         </header>
@@ -39,61 +39,61 @@
         <section class="sync-section" id="syncSection">
             <div class="sync-row">
                 <div class="sync-field">
-                    <label>JSONBin.io API Key</label>
-                    <input type="text" id="jsonbinKeyInput" placeholder="Paste your JSONBin.io Master Key here...">
+                    <label>JSONBin.io API Key (optional)</label>
+                    <input type="text" id="jsonbinKeyInput" placeholder="Dein JSONBin.io Master Key...">
                 </div>
                 <div class="sync-field">
                     <label>Bin ID (optional)</label>
-                    <input type="text" id="jsonbinIdInput" placeholder="Leave empty to create new bin">
+                    <input type="text" id="jsonbinIdInput" placeholder="Leer lassen für neue Bin">
                 </div>
                 <div class="sync-field sync-actions">
                     <label>&nbsp;</label>
-                    <button id="connectJsonbinBtn" class="primary-btn small">Connect</button>
+                    <button id="connectJsonbinBtn" class="primary-btn small">Cloud Connect</button>
                 </div>
             </div>
             <p class="sync-hint">
-                Get your free API key at <a href="https://jsonbin.io/" target="_blank" rel="noopener">jsonbin.io</a>.
-                This syncs your leads & history across all devices. Data is stored in the cloud.
+                Kostenlosen API-Key bei <a href="https://jsonbin.io/" target="_blank" rel="noopener">jsonbin.io</a> holen.
+                Daten werden in der Cloud gespeichert und über Geräte synchronisiert. Ohne Key bleiben Daten lokal gespeichert.
             </p>
             <div id="syncMessage" class="sync-message"></div>
         </section>
 
         <!-- Dashboard (Clickable) -->
         <section class="dashboard">
-            <div class="dash-card clickable" data-filter="all" title="Show all leads">
-                <span class="dash-label">Total Leads</span>
+            <div class="dash-card clickable" data-filter="all" title="Alle Leads anzeigen">
+                <span class="dash-label">Gesamt</span>
                 <span class="dash-value" id="dashTotal">0</span>
             </div>
-            <div class="dash-card clickable" data-filter="tocall" title="Show leads to call">
-                <span class="dash-label">To Call</span>
+            <div class="dash-card clickable" data-filter="tocall" title="Noch anzurufende Leads">
+                <span class="dash-label">Anrufen</span>
                 <span class="dash-value dash-blue" id="dashToCall">0</span>
             </div>
-            <div class="dash-card clickable" data-filter="called" title="Show called leads">
-                <span class="dash-label">Called</span>
+            <div class="dash-card clickable" data-filter="called" title="Bereits angerufen">
+                <span class="dash-label">Angerufen</span>
                 <span class="dash-value dash-yellow" id="dashCalled">0</span>
             </div>
-            <div class="dash-card clickable" data-filter="accepted" title="Show accepted leads">
-                <span class="dash-label">Accepted</span>
+            <div class="dash-card clickable" data-filter="accepted" title="Akzeptierte Leads">
+                <span class="dash-label">Akzeptiert</span>
                 <span class="dash-value dash-green" id="dashAccepted">0</span>
             </div>
-            <div class="dash-card clickable" data-filter="rejected" title="Show rejected leads">
-                <span class="dash-label">Rejected</span>
+            <div class="dash-card clickable" data-filter="rejected" title="Abgelehnte Leads">
+                <span class="dash-label">Abgelehnt</span>
                 <span class="dash-value dash-red" id="dashRejected">0</span>
             </div>
-            <div class="dash-card clickable" data-filter="progress" title="Show in-progress leads">
-                <span class="dash-label">In Progress</span>
+            <div class="dash-card clickable" data-filter="progress" title="Leads in Bearbeitung">
+                <span class="dash-label">In Bearbeitung</span>
                 <span class="dash-value dash-purple" id="dashProgress">0</span>
             </div>
         </section>
 
         <!-- Search Provider Toggle -->
         <section class="provider-section">
-            <div class="provider-label">Data Source:</div>
+            <div class="provider-label">Datenquelle:</div>
             <div class="provider-toggle">
                 <button id="providerOsm" class="provider-btn active">
                     <span class="provider-icon">🗺️</span>
                     <span class="provider-name">OpenStreetMap</span>
-                    <span class="provider-badge">FREE</span>
+                    <span class="provider-badge">KOSTENLOS</span>
                 </button>
                 <button id="providerGoogle" class="provider-btn">
                     <span class="provider-icon">🔍</span>
@@ -106,12 +106,12 @@
         <!-- API Key Input (Google only) -->
         <section class="apikey-section" id="apiKeyBox" style="display:none">
             <div class="apikey-row">
-                <input type="text" id="apiKeyInput" placeholder="Paste your Google Places API key here...">
-                <button id="saveApiKeyBtn" class="ghost-btn">Save Key</button>
+                <input type="text" id="apiKeyInput" placeholder="Google Places API Key hier einfügen...">
+                <button id="saveApiKeyBtn" class="ghost-btn">Key Speichern</button>
             </div>
             <p class="apikey-hint">
-                Get a free key at <a href="https://developers.google.com/maps/documentation/places/web-service/get-api-key" target="_blank" rel="noopener">Google Cloud Console</a>.
-                Key is stored locally in your browser only.
+                Kostenlosen Key bei <a href="https://developers.google.com/maps/documentation/places/web-service/get-api-key" target="_blank" rel="noopener">Google Cloud Console</a> holen.
+                Key wird nur lokal im Browser gespeichert.
             </p>
         </section>
 
@@ -119,11 +119,11 @@
         <section class="search-section">
             <div class="search-row">
                 <div class="search-field">
-                    <label>Business Niche</label>
+                    <label>Branchen-Nische</label>
                     <div class="niche-input-wrap">
-                        <input type="text" id="nicheInput" placeholder="Type or select a niche..." list="nicheOptions" autocomplete="off">
+                        <input type="text" id="nicheInput" placeholder="Nische eingeben oder auswählen..." list="nicheOptions" autocomplete="off">
                         <datalist id="nicheOptions"></datalist>
-                        <button id="nicheDropdownBtn" class="niche-dropdown-btn" title="Show all niches">▼</button>
+                        <button id="nicheDropdownBtn" class="niche-dropdown-btn" title="Alle Nischen anzeigen">▼</button>
                     </div>
                 </div>
                 <div class="search-field">
@@ -138,17 +138,17 @@
                 <div class="search-field search-actions">
                     <label>&nbsp;</label>
                     <button id="searchBtn" class="primary-btn">
-                        <span id="searchBtnText">Search</span>
+                        <span id="searchBtnText">Suchen</span>
                     </button>
                 </div>
             </div>
             <div class="location-row">
-                <span id="locationStatus">Detecting location...</span>
-                <button id="manualLocationBtn" class="text-btn">Use manual location</button>
+                <span id="locationStatus">Standort wird ermittelt...</span>
+                <button id="manualLocationBtn" class="text-btn">Manuellen Standort verwenden</button>
             </div>
             <div id="manualLocationBox" class="manual-location" style="display:none">
-                <input type="text" id="manualLocationInput" placeholder="Enter city (e.g. Berlin, London, New York)">
-                <button id="setLocationBtn" class="primary-btn small">Set Location</button>
+                <input type="text" id="manualLocationInput" placeholder="Stadt eingeben (z.B. Berlin, München, Hamburg)">
+                <button id="setLocationBtn" class="primary-btn small">Standort setzen</button>
             </div>
         </section>
 
@@ -157,69 +157,72 @@
             <div class="filter-group">
                 <label>Status:</label>
                 <select id="filterStatus">
-                    <option value="">All</option>
-                    <option value="tocall">To Call</option>
-                    <option value="called">Called</option>
-                    <option value="accepted">Accepted</option>
-                    <option value="rejected">Rejected</option>
-                    <option value="progress">In Progress</option>
+                    <option value="">Alle</option>
+                    <option value="tocall">Anrufen</option>
+                    <option value="called">Angerufen</option>
+                    <option value="accepted">Akzeptiert</option>
+                    <option value="rejected">Abgelehnt</option>
+                    <option value="progress">In Bearbeitung</option>
                 </select>
             </div>
             <div class="filter-group">
-                <label>Website:</label>
+                <label>Webseite:</label>
                 <select id="filterWebsite">
-                    <option value="">All</option>
-                    <option value="has">Has Website</option>
-                    <option value="none">No Website</option>
+                    <option value="">Alle</option>
+                    <option value="has">Mit Webseite</option>
+                    <option value="none">Ohne Webseite</option>
                 </select>
             </div>
             <div class="filter-group">
-                <label>Phone:</label>
+                <label>Telefon:</label>
                 <select id="filterPhone">
-                    <option value="">All</option>
-                    <option value="has">Has Phone</option>
-                    <option value="none">No Phone</option>
+                    <option value="">Alle</option>
+                    <option value="has">Mit Telefon</option>
+                    <option value="none">Ohne Telefon</option>
                 </select>
             </div>
             <div class="filter-group">
-                <label>Rating:</label>
+                <label>Bewertung:</label>
                 <select id="filterRating">
-                    <option value="">All</option>
-                    <option value="4plus">4+ Stars</option>
-                    <option value="3plus">3+ Stars</option>
-                    <option value="none">No Rating</option>
+                    <option value="">Alle</option>
+                    <option value="4plus">4+ Sterne</option>
+                    <option value="3plus">3+ Sterne</option>
+                    <option value="none">Keine Bewertung</option>
                 </select>
             </div>
             <div class="filter-group">
-                <label>Source:</label>
+                <label>Quelle:</label>
                 <select id="filterSource">
-                    <option value="">All</option>
+                    <option value="">Alle</option>
                     <option value="osm">OpenStreetMap</option>
                     <option value="google">Google Places</option>
                 </select>
             </div>
             <div class="filter-group">
-                <label>Category:</label>
+                <label>Kategorie:</label>
                 <select id="filterCategory">
-                    <option value="">All</option>
+                    <option value="">Alle</option>
                 </select>
             </div>
             <div class="filter-group search-group">
-                <input type="text" id="filterInput" placeholder="Search name, phone, address, notes...">
+                <input type="text" id="filterInput" placeholder="Suche: Name, Telefon, Adresse, Notizen...">
             </div>
             <div class="filter-actions">
-                <button id="resetFiltersBtn" class="ghost-btn small">Reset Filters</button>
+                <button id="resetFiltersBtn" class="ghost-btn small">Filter zurücksetzen</button>
             </div>
         </section>
 
         <!-- Toolbar -->
         <section class="toolbar">
             <div class="toolbar-info">
-                <span id="resultsCount">0 leads</span>
+                <span id="resultsCount">0 Leads</span>
             </div>
             <div class="toolbar-actions">
+                <button id="saveFileBtn" class="ghost-btn">💾 Speichern</button>
+                <button id="loadFileBtn" class="ghost-btn">📂 Laden</button>
+                <input type="file" id="fileInput" accept=".json" style="display:none">
                 <button id="exportBtn" class="ghost-btn">Export CSV</button>
-                <button id="clearBtn" class="ghost-btn danger">Clear All</button>
+                <button id="clearBtn" class="ghost-btn danger">Alle löschen</button>
             </div>
         </section>
 
@@ -227,7 +230,7 @@
         <section class="results-section">
             <div id="resultsTableWrap" class="table-wrap">
                 <div class="empty-state" id="emptyState">
-                    <p>Enter a business niche and click Search to find leads near you.</p>
+                    <p>Gib eine Branchen-Nische ein und klicke auf Suchen, um Leads in deiner Nähe zu finden.</p>
                 </div>
             </div>
         </section>
@@ -235,11 +238,11 @@
         <!-- History Section -->
         <section class="history-section" id="historySection">
             <div class="history-header">
-                <h2>📋 Activity History</h2>
-                <button id="clearHistoryBtn" class="ghost-btn small danger">Clear History</button>
+                <h2>📋 Aktivitätsverlauf</h2>
+                <button id="clearHistoryBtn" class="ghost-btn small danger">Verlauf löschen</button>
             </div>
             <div id="historyList" class="history-list">
-                <div class="empty-history">No activity yet.</div>
+                <div class="empty-history">Noch keine Aktivität.</div>
             </div>
         </section>
     </div>
@@ -249,11 +252,11 @@
         <div class="modal-overlay"></div>
         <div class="modal-content">
             <div class="modal-header">
-                <h3>Select a Business Niche</h3>
+                <h3>Branchen-Nische auswählen</h3>
                 <button class="modal-close" id="closeNicheModal">&times;</button>
             </div>
             <div class="modal-body">
-                <input type="text" id="nicheSearchInput" placeholder="Search niches..." class="niche-search">
+                <input type="text" id="nicheSearchInput" placeholder="Nischen suchen..." class="niche-search">
                 <div id="nicheList" class="niche-list"></div>
             </div>
         </div>
