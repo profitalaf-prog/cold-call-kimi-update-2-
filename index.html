@@ -4,16 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cold Call Finder</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📞</text></svg>">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#128222;</text></svg>">
     <link rel="stylesheet" href="style.css">
     <base target="_blank">
-<base target="_blank">
 </head>
 <body>
-    <!-- Login Screen -->
     <div id="loginScreen" class="login-screen">
         <div class="login-box">
-            <div class="login-logo">📞</div>
+            <div class="login-logo">&#128222;</div>
             <h1>Cold Call Finder</h1>
             <p>Passwort eingeben zum Fortfahren</p>
             <input type="password" id="passwordInput" placeholder="Passwort" autocomplete="off">
@@ -21,247 +19,88 @@
             <div id="loginError" class="login-error"></div>
         </div>
     </div>
-
-    <!-- Main App -->
     <div id="appScreen" class="app-screen" style="display:none">
         <header>
-            <div class="header-left">
-                <span class="logo">📞 Cold Call Finder</span>
-            </div>
+            <div class="header-left"><span class="logo">&#128222; Cold Call Finder</span></div>
             <div class="header-right">
-                <span id="syncStatus" class="sync-status">⏳ Bereit</span>
-                <button id="syncNowBtn" class="ghost-btn small" title="Jetzt synchronisieren">🔄</button>
+                <span id="syncStatus" class="sync-status">&#9203; Bereit</span>
+                <button id="syncNowBtn" class="ghost-btn small" title="Jetzt synchronisieren">&#128260;</button>
                 <button id="logoutBtn" class="ghost-btn">Logout</button>
             </div>
         </header>
-
-        <!-- Cloud Sync Section -->
         <section class="sync-section" id="syncSection">
             <div class="sync-row">
-                <div class="sync-field">
-                    <label>JSONBin.io API Key (optional)</label>
-                    <input type="text" id="jsonbinKeyInput" placeholder="Dein JSONBin.io Master Key...">
-                </div>
-                <div class="sync-field">
-                    <label>Bin ID (optional)</label>
-                    <input type="text" id="jsonbinIdInput" placeholder="Leer lassen für neue Bin">
-                </div>
-                <div class="sync-field sync-actions">
-                    <label>&nbsp;</label>
-                    <button id="connectJsonbinBtn" class="primary-btn small">Cloud Connect</button>
-                </div>
+                <div class="sync-field"><label>JSONBin.io API Key (optional)</label><input type="text" id="jsonbinKeyInput" placeholder="Dein JSONBin.io Master Key..."></div>
+                <div class="sync-field"><label>Bin ID (optional)</label><input type="text" id="jsonbinIdInput" placeholder="Leer lassen für neue Bin"></div>
+                <div class="sync-field sync-actions"><label>&nbsp;</label><button id="connectJsonbinBtn" class="primary-btn small">Cloud Connect</button></div>
             </div>
-            <p class="sync-hint">
-                Kostenlosen API-Key bei <a href="https://jsonbin.io/" target="_blank" rel="noopener">jsonbin.io</a> holen.
-                Daten werden in der Cloud gespeichert und über Geräte synchronisiert. Ohne Key bleiben Daten lokal gespeichert.
-            </p>
+            <p class="sync-hint">Kostenlosen API-Key bei <a href="https://jsonbin.io/" target="_blank" rel="noopener">jsonbin.io</a> holen. Daten werden in der Cloud gespeichert und über Geräte synchronisiert. Ohne Key bleiben Daten lokal gespeichert.</p>
             <div id="syncMessage" class="sync-message"></div>
         </section>
-
-        <!-- Dashboard (Clickable) -->
         <section class="dashboard">
-            <div class="dash-card clickable" data-filter="all" title="Alle Leads anzeigen">
-                <span class="dash-label">Gesamt</span>
-                <span class="dash-value" id="dashTotal">0</span>
-            </div>
-            <div class="dash-card clickable" data-filter="tocall" title="Noch anzurufende Leads">
-                <span class="dash-label">Anrufen</span>
-                <span class="dash-value dash-blue" id="dashToCall">0</span>
-            </div>
-            <div class="dash-card clickable" data-filter="called" title="Bereits angerufen">
-                <span class="dash-label">Angerufen</span>
-                <span class="dash-value dash-yellow" id="dashCalled">0</span>
-            </div>
-            <div class="dash-card clickable" data-filter="accepted" title="Akzeptierte Leads">
-                <span class="dash-label">Akzeptiert</span>
-                <span class="dash-value dash-green" id="dashAccepted">0</span>
-            </div>
-            <div class="dash-card clickable" data-filter="rejected" title="Abgelehnte Leads">
-                <span class="dash-label">Abgelehnt</span>
-                <span class="dash-value dash-red" id="dashRejected">0</span>
-            </div>
-            <div class="dash-card clickable" data-filter="progress" title="Leads in Bearbeitung">
-                <span class="dash-label">In Bearbeitung</span>
-                <span class="dash-value dash-purple" id="dashProgress">0</span>
-            </div>
+            <div class="dash-card clickable" data-filter="all" title="Alle Leads anzeigen"><span class="dash-label">Gesamt</span><span class="dash-value" id="dashTotal">0</span></div>
+            <div class="dash-card clickable" data-filter="tocall" title="Noch anzurufende Leads"><span class="dash-label">Anrufen</span><span class="dash-value dash-blue" id="dashToCall">0</span></div>
+            <div class="dash-card clickable" data-filter="called" title="Bereits angerufen"><span class="dash-label">Angerufen</span><span class="dash-value dash-yellow" id="dashCalled">0</span></div>
+            <div class="dash-card clickable" data-filter="accepted" title="Akzeptierte Leads"><span class="dash-label">Akzeptiert</span><span class="dash-value dash-green" id="dashAccepted">0</span></div>
+            <div class="dash-card clickable" data-filter="rejected" title="Abgelehnte Leads"><span class="dash-label">Abgelehnt</span><span class="dash-value dash-red" id="dashRejected">0</span></div>
+            <div class="dash-card clickable" data-filter="progress" title="Leads in Bearbeitung"><span class="dash-label">In Bearbeitung</span><span class="dash-value dash-purple" id="dashProgress">0</span></div>
         </section>
-
-        <!-- Search Provider Toggle -->
         <section class="provider-section">
             <div class="provider-label">Datenquelle:</div>
             <div class="provider-toggle">
-                <button id="providerOsm" class="provider-btn active">
-                    <span class="provider-icon">🗺️</span>
-                    <span class="provider-name">OpenStreetMap</span>
-                    <span class="provider-badge">KOSTENLOS</span>
-                </button>
-                <button id="providerGoogle" class="provider-btn">
-                    <span class="provider-icon">🔍</span>
-                    <span class="provider-name">Google Places</span>
-                    <span class="provider-badge">API Key</span>
-                </button>
+                <button id="providerOsm" class="provider-btn active"><span class="provider-icon">&#128506;&#65039;</span><span class="provider-name">OpenStreetMap</span><span class="provider-badge">KOSTENLOS</span></button>
+                <button id="providerGoogle" class="provider-btn"><span class="provider-icon">&#128269;</span><span class="provider-name">Google Places</span><span class="provider-badge">API Key</span></button>
             </div>
         </section>
-
-        <!-- API Key Input (Google only) -->
         <section class="apikey-section" id="apiKeyBox" style="display:none">
-            <div class="apikey-row">
-                <input type="text" id="apiKeyInput" placeholder="Google Places API Key hier einfügen...">
-                <button id="saveApiKeyBtn" class="ghost-btn">Key Speichern</button>
-            </div>
-            <p class="apikey-hint">
-                Kostenlosen Key bei <a href="https://developers.google.com/maps/documentation/places/web-service/get-api-key" target="_blank" rel="noopener">Google Cloud Console</a> holen.
-                Key wird nur lokal im Browser gespeichert.
-            </p>
+            <div class="apikey-row"><input type="text" id="apiKeyInput" placeholder="Google Places API Key hier einfügen..."><button id="saveApiKeyBtn" class="ghost-btn">Key Speichern</button></div>
+            <p class="apikey-hint">Kostenlosen Key bei <a href="https://developers.google.com/maps/documentation/places/web-service/get-api-key" target="_blank" rel="noopener">Google Cloud Console</a> holen. Key wird nur lokal im Browser gespeichert.</p>
         </section>
-
-        <!-- Search Section -->
         <section class="search-section">
             <div class="search-row">
                 <div class="search-field">
                     <label>Branchen-Nische</label>
-                    <div class="niche-input-wrap">
-                        <input type="text" id="nicheInput" placeholder="Nische eingeben oder auswählen..." list="nicheOptions" autocomplete="off">
-                        <datalist id="nicheOptions"></datalist>
-                        <button id="nicheDropdownBtn" class="niche-dropdown-btn" title="Alle Nischen anzeigen">▼</button>
-                    </div>
+                    <div class="niche-input-wrap"><input type="text" id="nicheInput" placeholder="Nische eingeben oder auswählen..." list="nicheOptions" autocomplete="off"><datalist id="nicheOptions"></datalist><button id="nicheDropdownBtn" class="niche-dropdown-btn" title="Alle Nischen anzeigen">&#9660;</button></div>
                 </div>
-                <div class="search-field">
-                    <label>Radius</label>
-                    <select id="radiusSelect">
-                        <option value="5000">5 km</option>
-                        <option value="10000" selected>10 km</option>
-                        <option value="25000">25 km</option>
-                        <option value="50000">50 km</option>
-                    </select>
-                </div>
-                <div class="search-field search-actions">
-                    <label>&nbsp;</label>
-                    <button id="searchBtn" class="primary-btn">
-                        <span id="searchBtnText">Suchen</span>
-                    </button>
-                </div>
+                <div class="search-field"><label>Radius</label><select id="radiusSelect"><option value="5000">5 km</option><option value="10000" selected>10 km</option><option value="25000">25 km</option><option value="50000">50 km</option></select></div>
+                <div class="search-field search-actions"><label>&nbsp;</label><button id="searchBtn" class="primary-btn"><span id="searchBtnText">Suchen</span></button></div>
             </div>
-            <div class="location-row">
-                <span id="locationStatus">Standort wird ermittelt...</span>
-                <button id="manualLocationBtn" class="text-btn">Manuellen Standort verwenden</button>
-            </div>
-            <div id="manualLocationBox" class="manual-location" style="display:none">
-                <input type="text" id="manualLocationInput" placeholder="Stadt eingeben (z.B. Berlin, München, Hamburg)">
-                <button id="setLocationBtn" class="primary-btn small">Standort setzen</button>
-            </div>
+            <div class="location-row"><span id="locationStatus">Standort wird ermittelt...</span><button id="manualLocationBtn" class="text-btn">Manuellen Standort verwenden</button></div>
+            <div id="manualLocationBox" class="manual-location" style="display:none"><input type="text" id="manualLocationInput" placeholder="Stadt eingeben (z.B. Berlin, München, Hamburg)"><button id="setLocationBtn" class="primary-btn small">Standort setzen</button></div>
         </section>
-
-        <!-- Filters Toolbar -->
         <section class="filters-toolbar" id="filtersToolbar">
-            <div class="filter-group">
-                <label>Status:</label>
-                <select id="filterStatus">
-                    <option value="">Alle</option>
-                    <option value="tocall">Anrufen</option>
-                    <option value="called">Angerufen</option>
-                    <option value="accepted">Akzeptiert</option>
-                    <option value="rejected">Abgelehnt</option>
-                    <option value="progress">In Bearbeitung</option>
-                </select>
-            </div>
-            <div class="filter-group">
-                <label>Webseite:</label>
-                <select id="filterWebsite">
-                    <option value="">Alle</option>
-                    <option value="has">Mit Webseite</option>
-                    <option value="none">Ohne Webseite</option>
-                </select>
-            </div>
-            <div class="filter-group">
-                <label>Telefon:</label>
-                <select id="filterPhone">
-                    <option value="">Alle</option>
-                    <option value="has">Mit Telefon</option>
-                    <option value="none">Ohne Telefon</option>
-                </select>
-            </div>
-            <div class="filter-group">
-                <label>Bewertung:</label>
-                <select id="filterRating">
-                    <option value="">Alle</option>
-                    <option value="4plus">4+ Sterne</option>
-                    <option value="3plus">3+ Sterne</option>
-                    <option value="none">Keine Bewertung</option>
-                </select>
-            </div>
-            <div class="filter-group">
-                <label>Quelle:</label>
-                <select id="filterSource">
-                    <option value="">Alle</option>
-                    <option value="osm">OpenStreetMap</option>
-                    <option value="google">Google Places</option>
-                </select>
-            </div>
-            <div class="filter-group">
-                <label>Kategorie:</label>
-                <select id="filterCategory">
-                    <option value="">Alle</option>
-                </select>
-            </div>
-            <div class="filter-group search-group">
-                <input type="text" id="filterInput" placeholder="Suche: Name, Telefon, Adresse, Notizen...">
-            </div>
-            <div class="filter-actions">
-                <button id="resetFiltersBtn" class="ghost-btn small">Filter zurücksetzen</button>
-            </div>
+            <div class="filter-group"><label>Status:</label><select id="filterStatus"><option value="">Alle</option><option value="tocall">Anrufen</option><option value="called">Angerufen</option><option value="accepted">Akzeptiert</option><option value="rejected">Abgelehnt</option><option value="progress">In Bearbeitung</option></select></div>
+            <div class="filter-group"><label>Webseite:</label><select id="filterWebsite"><option value="">Alle</option><option value="has">Mit Webseite</option><option value="none">Ohne Webseite</option></select></div>
+            <div class="filter-group"><label>Telefon:</label><select id="filterPhone"><option value="">Alle</option><option value="has">Mit Telefon</option><option value="none">Ohne Telefon</option></select></div>
+            <div class="filter-group"><label>Bewertung:</label><select id="filterRating"><option value="">Alle</option><option value="4plus">4+ Sterne</option><option value="3plus">3+ Sterne</option><option value="none">Keine Bewertung</option></select></div>
+            <div class="filter-group"><label>Quelle:</label><select id="filterSource"><option value="">Alle</option><option value="osm">OpenStreetMap</option><option value="google">Google Places</option></select></div>
+            <div class="filter-group"><label>Kategorie:</label><select id="filterCategory"><option value="">Alle</option></select></div>
+            <div class="filter-group search-group"><input type="text" id="filterInput" placeholder="Suche: Name, Telefon, Adresse, Notizen..."></div>
+            <div class="filter-actions"><button id="resetFiltersBtn" class="ghost-btn small">Filter zurücksetzen</button></div>
         </section>
-
-        <!-- Toolbar -->
         <section class="toolbar">
-            <div class="toolbar-info">
-                <span id="resultsCount">0 Leads</span>
-            </div>
+            <div class="toolbar-info"><span id="resultsCount">0 Leads</span></div>
             <div class="toolbar-actions">
-                <button id="saveFileBtn" class="ghost-btn">💾 Speichern</button>
-                <button id="loadFileBtn" class="ghost-btn">📂 Laden</button>
+                <button id="saveFileBtn" class="ghost-btn">&#128190; Speichern</button>
+                <button id="loadFileBtn" class="ghost-btn">&#128450; Laden</button>
                 <input type="file" id="fileInput" accept=".json" style="display:none">
                 <button id="exportBtn" class="ghost-btn">Export CSV</button>
                 <button id="clearBtn" class="ghost-btn danger">Alle löschen</button>
             </div>
         </section>
-
-        <!-- Results Table -->
-        <section class="results-section">
-            <div id="resultsTableWrap" class="table-wrap">
-                <div class="empty-state" id="emptyState">
-                    <p>Gib eine Branchen-Nische ein und klicke auf Suchen, um Leads in deiner Nähe zu finden.</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- History Section -->
+        <section class="results-section"><div id="resultsTableWrap" class="table-wrap"><div class="empty-state" id="emptyState"><p>Gib eine Branchen-Nische ein und klicke auf Suchen, um Leads in deiner Nähe zu finden.</p></div></div></section>
         <section class="history-section" id="historySection">
-            <div class="history-header">
-                <h2>📋 Aktivitätsverlauf</h2>
-                <button id="clearHistoryBtn" class="ghost-btn small danger">Verlauf löschen</button>
-            </div>
-            <div id="historyList" class="history-list">
-                <div class="empty-history">Noch keine Aktivität.</div>
-            </div>
+            <div class="history-header"><h2>&#128203; Aktivitätsverlauf</h2><button id="clearHistoryBtn" class="ghost-btn small danger">Verlauf löschen</button></div>
+            <div id="historyList" class="history-list"><div class="empty-history">Noch keine Aktivität.</div></div>
         </section>
     </div>
-
-    <!-- Niche Dropdown Modal -->
     <div id="nicheModal" class="modal" style="display:none">
         <div class="modal-overlay"></div>
         <div class="modal-content">
-            <div class="modal-header">
-                <h3>Branchen-Nische auswählen</h3>
-                <button class="modal-close" id="closeNicheModal">&times;</button>
-            </div>
-            <div class="modal-body">
-                <input type="text" id="nicheSearchInput" placeholder="Nischen suchen..." class="niche-search">
-                <div id="nicheList" class="niche-list"></div>
-            </div>
+            <div class="modal-header"><h3>Branchen-Nische auswählen</h3><button class="modal-close" id="closeNicheModal">&times;</button></div>
+            <div class="modal-body"><input type="text" id="nicheSearchInput" placeholder="Nischen suchen..." class="niche-search"><div id="nicheList" class="niche-list"></div></div>
         </div>
     </div>
-
     <script src="script.js"></script>
 </body>
 </html>
