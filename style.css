@@ -1,5 +1,5 @@
 /* ============================================
-   Cold Call Finder — Styles (Extended v2)
+   Cold Call Finder — Styles (Korrigiert & Verbessert v3)
    ============================================ */
 
 /* CSS Variables */
@@ -735,6 +735,7 @@ header {
 .toolbar-actions {
     display: flex;
     gap: 8px;
+    flex-wrap: wrap;
 }
 
 /* ============================================
@@ -794,7 +795,7 @@ tr:last-child td {
     border-bottom: none;
 }
 
-/* NEW: Red separator between old and new leads */
+/* Roter Separator zwischen alten und neuen Leads */
 tr.new-batch-separator td {
     border-top: 3px solid var(--red) !important;
     background: var(--red-dim) !important;
@@ -1305,6 +1306,7 @@ tr.status-progress td:first-child { box-shadow: inset 3px 0 0 var(--purple); }
 
     .toolbar-actions {
         justify-content: flex-end;
+        flex-wrap: wrap;
     }
 
     .manual-location {
@@ -1341,5 +1343,14 @@ tr.status-progress td:first-child { box-shadow: inset 3px 0 0 var(--purple); }
 
     .niche-list {
         grid-template-columns: 1fr;
+    }
+
+    .toolbar-actions {
+        width: 100%;
+    }
+
+    .toolbar-actions .ghost-btn {
+        flex: 1;
+        text-align: center;
     }
 }
