@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cold Call Finder</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📞</text></svg>">
+    <link rel="stylesheet" href="style.css">
+    <base target="_blank">
+<base target="_blank">
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-screen">
+        <div class="login-box">
+            <div class="login-logo">📞</div>
+            <h1>Cold Call Finder</h1>
+            <p>Enter password to continue</p>
+            <input type="password" id="passwordInput" placeholder="Password" autocomplete="off">
+            <button id="loginBtn">Enter</button>
+            <div id="loginError" class="login-error"></div>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="appScreen" class="app-screen" style="display:none">
+        <header>
+            <div class="header-left">
+                <span class="logo">📞 Cold Call Finder</span>
+            </div>
+            <div class="header-right">
+                <span id="syncStatus" class="sync-status">⏳ Sync...</span>
+                <button id="syncNowBtn" class="ghost-btn small" title="Sync now">🔄</button>
+                <button id="logoutBtn" class="ghost-btn">Logout</button>
+            </div>
+        </header>
+
+        <!-- Cloud Sync Section -->
+        <section class="sync-section" id="syncSection">
+            <div class="sync-row">
+                <div class="sync-field">
+                    <label>JSONBin.io API Key</label>
+                    <input type="text" id="jsonbinKeyInput" placeholder="Paste your JSONBin.io Master Key here...">
+                </div>
+                <div class="sync-field">
+                    <label>Bin ID (optional)</label>
+                    <input type="text" id="jsonbinIdInput" placeholder="Leave empty to create new bin">
+                </div>
+                <div class="sync-field sync-actions">
+                    <label>&nbsp;</label>
+                    <button id="connectJsonbinBtn" class="primary-btn small">Connect</button>
+                </div>
+            </div>
+            <p class="sync-hint">
+                Get your free API key at <a href="https://jsonbin.io/" target="_blank" rel="noopener">jsonbin.io</a>.
+                This syncs your leads & history across all devices. Data is stored in the cloud.
+            </p>
+            <div id="syncMessage" class="sync-message"></div>
+        </section>
+
+        <!-- Dashboard (Clickable) -->
+        <section class="dashboard">
+            <div class="dash-card clickable" data-filter="all" title="Show all leads">
+                <span class="dash-label">Total Leads</span>
+                <span class="dash-value" id="dashTotal">0</span>
+            </div>
+            <div class="dash-card clickable" data-filter="tocall" title="Show leads to call">
+                <span class="dash-label">To Call</span>
+                <span class="dash-value dash-blue" id="dashToCall">0</span>
+            </div>
+            <div class="dash-card clickable" data-filter="called" title="Show called leads">
+                <span class="dash-label">Called</span>
+                <span class="dash-value dash-yellow" id="dashCalled">0</span>
+            </div>
+            <div class="dash-card clickable" data-filter="accepted" title="Show accepted leads">
+                <span class="dash-label">Accepted</span>
+                <span class="dash-value dash-green" id="dashAccepted">0</span>
+            </div>
+            <div class="dash-card clickable" data-filter="rejected" title="Show rejected leads">
+                <span class="dash-label">Rejected</span>
+                <span class="dash-value dash-red" id="dashRejected">0</span>
+            </div>
+            <div class="dash-card clickable" data-filter="progress" title="Show in-progress leads">
+                <span class="dash-label">In Progress</span>
+                <span class="dash-value dash-purple" id="dashProgress">0</span>
+            </div>
+        </section>
+
+        <!-- Search Provider Toggle -->
+        <section class="provider-section">
+            <div class="provider-label">Data Source:</div>
+            <div class="provider-toggle">
+                <button id="providerOsm" class="provider-btn active">
+                    <span class="provider-icon">🗺️</span>
+                    <span class="provider-name">OpenStreetMap</span>
+                    <span class="provider-badge">FREE</span>
+                </button>
+                <button id="providerGoogle" class="provider-btn">
+                    <span class="provider-icon">🔍</span>
+                    <span class="provider-name">Google Places</span>
+                    <span class="provider-badge">API Key</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- API Key Input (Google only) -->
+        <section class="apikey-section" id="apiKeyBox" style="display:none">
+            <div class="apikey-row">
+                <input type="text" id="apiKeyInput" placeholder="Paste your Google Places API key here...">
+                <button id="saveApiKeyBtn" class="ghost-btn">Save Key</button>
+            </div>
+            <p class="apikey-hint">
+                Get a free key at <a href="https://developers.google.com/maps/documentation/places/web-service/get-api-key" target="_blank" rel="noopener">Google Cloud Console</a>.
+                Key is stored locally in your browser only.
+            </p>
+        </section>
+
+        <!-- Search Section -->
+        <section class="search-section">
+            <div class="search-row">
+                <div class="search-field">
+                    <label>Business Niche</label>
+                    <div class="niche-input-wrap">
+                        <input type="text" id="nicheInput" placeholder="Type or select a niche..." list="nicheOptions" autocomplete="off">
+                        <datalist id="nicheOptions"></datalist>
+                        <button id="nicheDropdownBtn" class="niche-dropdown-btn" title="Show all niches">▼</button>
+                    </div>
+                </div>
+                <div class="search-field">
+                    <label>Radius</label>
+                    <select id="radiusSelect">
+                        <option value="5000">5 km</option>
+                        <option value="10000" selected>10 km</option>
+                        <option value="25000">25 km</option>
+                        <option value="50000">50 km</option>
+                    </select>
+                </div>
+                <div class="search-field search-actions">
+                    <label>&nbsp;</label>
+                    <button id="searchBtn" class="primary-btn">
+                        <span id="searchBtnText">Search</span>
+                    </button>
+                </div>
+            </div>
+            <div class="location-row">
+                <span id="locationStatus">Detecting location...</span>
+                <button id="manualLocationBtn" class="text-btn">Use manual location</button>
+            </div>
+            <div id="manualLocationBox" class="manual-location" style="display:none">
+                <input type="text" id="manualLocationInput" placeholder="Enter city (e.g. Berlin, London, New York)">
+                <button id="setLocationBtn" class="primary-btn small">Set Location</button>
+            </div>
+        </section>
+
+        <!-- Filters Toolbar -->
+        <section class="filters-toolbar" id="filtersToolbar">
+            <div class="filter-group">
+                <label>Status:</label>
+                <select id="filterStatus">
+                    <option value="">All</option>
+                    <option value="tocall">To Call</option>
+                    <option value="called">Called</option>
+                    <option value="accepted">Accepted</option>
+                    <option value="rejected">Rejected</option>
+                    <option value="progress">In Progress</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Website:</label>
+                <select id="filterWebsite">
+                    <option value="">All</option>
+                    <option value="has">Has Website</option>
+                    <option value="none">No Website</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Phone:</label>
+                <select id="filterPhone">
+                    <option value="">All</option>
+                    <option value="has">Has Phone</option>
+                    <option value="none">No Phone</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Rating:</label>
+                <select id="filterRating">
+                    <option value="">All</option>
+                    <option value="4plus">4+ Stars</option>
+                    <option value="3plus">3+ Stars</option>
+                    <option value="none">No Rating</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Source:</label>
+                <select id="filterSource">
+                    <option value="">All</option>
+                    <option value="osm">OpenStreetMap</option>
+                    <option value="google">Google Places</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Category:</label>
+                <select id="filterCategory">
+                    <option value="">All</option>
+                </select>
+            </div>
+            <div class="filter-group search-group">
+                <input type="text" id="filterInput" placeholder="Search name, phone, address, notes...">
+            </div>
+            <div class="filter-actions">
+                <button id="resetFiltersBtn" class="ghost-btn small">Reset Filters</button>
+            </div>
+        </section>
+
+        <!-- Toolbar -->
+        <section class="toolbar">
+            <div class="toolbar-info">
+                <span id="resultsCount">0 leads</span>
+            </div>
+            <div class="toolbar-actions">
+                <button id="exportBtn" class="ghost-btn">Export CSV</button>
+                <button id="clearBtn" class="ghost-btn danger">Clear All</button>
+            </div>
+        </section>
+
+        <!-- Results Table -->
+        <section class="results-section">
+            <div id="resultsTableWrap" class="table-wrap">
+                <div class="empty-state" id="emptyState">
+                    <p>Enter a business niche and click Search to find leads near you.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- History Section -->
+        <section class="history-section" id="historySection">
+            <div class="history-header">
+                <h2>📋 Activity History</h2>
+                <button id="clearHistoryBtn" class="ghost-btn small danger">Clear History</button>
+            </div>
+            <div id="historyList" class="history-list">
+                <div class="empty-history">No activity yet.</div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Niche Dropdown Modal -->
+    <div id="nicheModal" class="modal" style="display:none">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Select a Business Niche</h3>
+                <button class="modal-close" id="closeNicheModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="nicheSearchInput" placeholder="Search niches..." class="niche-search">
+                <div id="nicheList" class="niche-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
