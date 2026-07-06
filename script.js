@@ -101,7 +101,7 @@ async function searchOpenStreetMap(niche){const radius=parseInt($('radiusSelect'
         queryParts.push('relation["'+key+'"="'+val+'"](around:'+radius+','+lat+','+lng+');');
     }
 
-    const query='[out:json][timeout:30];('+queryParts.join('')+');out center tags 50;';
+    const query='[out:json][timeout:60];('+queryParts.join('')+');out center tags;';
 
     try{
         const res=await fetch(OVERPASS_URL,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'data='+encodeURIComponent(query)});
