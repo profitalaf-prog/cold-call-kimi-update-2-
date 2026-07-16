@@ -6,7 +6,6 @@
     <title>Cold Call Finder</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#128222;</text></svg>">
     <link rel="stylesheet" href="style.css">
-    <base target="_blank">
 </head>
 <body>
     <div id="loginScreen" class="login-screen">
@@ -56,7 +55,7 @@
             <div class="apikey-row"><input type="text" id="apiKeyInput" placeholder="Google Places API Key hier einfügen..."><button id="saveApiKeyBtn" class="ghost-btn">Key Speichern</button></div>
             <p class="apikey-hint">Kostenlosen Key bei <a href="https://developers.google.com/maps/documentation/places/web-service/get-api-key" target="_blank" rel="noopener">Google Cloud Console</a> holen. Key wird nur lokal im Browser gespeichert.</p>
         </section>
-        <section class="search-section">
+        <section class="search-section" id="searchSection">
             <div class="search-row">
                 <div class="search-field">
                     <label>Branchen-Nische</label>
@@ -88,6 +87,19 @@
                 <button id="clearBtn" class="ghost-btn danger">Alle löschen</button>
             </div>
         </section>
+        <div id="bulkBar" class="bulk-bar" style="display:none">
+            <span id="bulkCount" class="bulk-count">0 ausgewählt</span>
+            <select id="bulkStatusSelect" class="bulk-status">
+                <option value="">Status setzen…</option>
+                <option value="tocall">Anrufen</option>
+                <option value="called">Angerufen</option>
+                <option value="accepted">Akzeptiert</option>
+                <option value="rejected">Abgelehnt</option>
+                <option value="progress">In Bearbeitung</option>
+            </select>
+            <button id="bulkDeleteBtn" class="ghost-btn small danger">Ausgewählte löschen</button>
+            <button id="bulkClearBtn" class="ghost-btn small">Auswahl aufheben</button>
+        </div>
         <section class="results-section"><div id="resultsTableWrap" class="table-wrap"><div class="empty-state" id="emptyState"><p>Gib eine Branchen-Nische ein und klicke auf Suchen, um Leads in deiner Nähe zu finden.</p></div></div></section>
         <section class="history-section" id="historySection">
             <div class="history-header"><h2>&#128203; Aktivitätsverlauf</h2><button id="clearHistoryBtn" class="ghost-btn small danger">Verlauf löschen</button></div>
